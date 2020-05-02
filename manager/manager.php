@@ -18,7 +18,9 @@ switch ($task) {
 
     case "newgame": //
         $mytext = readFileContent($filepath);
-        echo $mytext ? (writeFileContent($filepath2, $mytext) ? 'Игра начата' : 'Ошибка при создании нового кона') : ('Ошибка, в игре нет слов');
+        echo $mytext
+            ? (writeFileContent($filepath2, $mytext) ? 'Игра начата' : 'Ошибка при создании нового кона')
+            : ('Ошибка, в игре нет слов');
         break;
 
     case "clear": //
@@ -26,7 +28,9 @@ switch ($task) {
         break;
 
     case "addwords": //
-        echo addFileContent($filepath, $msg) ? 'Данные в файл успешно занесены' : 'Ошибка при записи в файл';
+        echo ($msg)
+            ? (addFileContent($filepath, $msg) ? 'Данные в файл успешно занесены' : 'Ошибка при записи в файл')
+            : ("Пустой набор слов");
         break;
 
     case "info": //
