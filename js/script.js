@@ -31,14 +31,14 @@ $(document).ready(() => {
 
 function preparePage() {
   $("#play").text("Ход");
-  $("#play").show();
-  $("#menuopen").show();
+  $("#play").fadeIn(50);
+  $("#menuopen").fadeIn(150);
   getScores();
   $("#msg").html(
     `<small><small>Откройте меню, чтобы положить слова в шляпу и затем запустить кон. Нажмите "ход", чтобы взять слова из шляпы.</small></small>`
   );
-  $("#menuopen").click(() => $("#menu").show());
-  $("#menuclose").click(() => $("#menu").hide());
+  $("#menuopen").click(() => $("#menu").fadeIn(120));
+  $("#menuclose").click(() => $("#menu").fadeOut(180));
   $("#play").click(() => request(0));
   $("#next").click(pushNext);
   $("#newgame").click(() => request(2));
@@ -143,7 +143,7 @@ function successGame(data, num) {
     $("#next").hide();
     $("#play").show();
     $("#timer").text("");//
-    $("#menuopen").show();
+    $("#menuopen").fadeIn(50);
     inGame = false;
   }
 
@@ -167,7 +167,7 @@ function successGame(data, num) {
     $("#next").hide();
     $("#play").show();
     $("#msg").text("Зачтено" + (word ? "" : ", слова закончились"));
-    $("#menuopen").show();
+    $("#menuopen").fadeIn(50);
   }
 
   lastChanse = false;
@@ -219,7 +219,7 @@ function timeout(time, delay) {
       $("#play").show();
       $("#msg").text("время вышло");
       $("#timer").text("");
-      $("#menuopen").show();
+      $("#menuopen").fadeIn(50);
       lastChanse = false;
       play.lose();
     }
@@ -234,7 +234,7 @@ function setGameName() {
     $("#setgamename").show();
     $("#selectnamebutton").click(() => {
       let val = document.getElementById("selectname").value;
-      $("#setgamename").hide();
+      $("#setgamename").fadeOut(150);
       if (val) {
         settings.data.gamename = val;
         resolve();

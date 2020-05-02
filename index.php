@@ -2,9 +2,7 @@
 <!DOCTYPE html>
 <html lang='ru'>
 
-<head>
-    <?php require "./page/head_tags.php" ?>
-</head>
+<?php require "./page/head_tags.php" ?>
 
 <body>
     <?php
