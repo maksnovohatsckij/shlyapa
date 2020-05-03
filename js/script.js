@@ -14,31 +14,29 @@ let settings = {
 let scores = 0;
 let pushable = true;
 let inGame = false;
-
 let dataArr = [];
 let word = "";
-
 let lastChanse = false;
 
 $(document).ready(() => {
-  $("#next").hide();
   $("#menu").hide();
-  $("#menuopen").hide();
-  $("#play").text(" ");
+  $("#next").hide();
   $("#play").hide();
+  $("#menuopen").hide();
   setGameName().then(preparePage, setGameName);
+  getActions();
 });
 
 function preparePage() {
-  $("#play").text("Ход");
-  $("#play").fadeIn(50);
-  $("#menuopen").fadeIn(150);
+  $("#play").fadeIn(30);
+  $("#menuopen").fadeIn(100);
   getScores();
   $("#msg").html(
     `<small><small>Откройте меню, чтобы положить слова в шляпу и затем запустить кон. Нажмите "ход", чтобы взять слова из шляпы.</small></small>`
   );
-  $("#menuopen").click(() => $("#menu").fadeIn(120));
-  $("#menuclose").click(() => $("#menu").fadeOut(180));
+  $("#msg small").fadeIn(20);
+  $("#menuopen").click(() => $("#menu").fadeIn(100));
+  $("#menuclose").click(() => $("#menu").fadeOut(150));
   $("#play").click(() => request(0));
   $("#next").click(pushNext);
   $("#newgame").click(() => request(2));
@@ -100,12 +98,10 @@ function putMsgVal(num) {
   if (num == 1) {
     str += dataArr.join("\r\n");
   } else if (num == 4) {
-    let wordselems = document.getElementsByClassName("newword");
-    for (let i = 0; i < wordselems.length; i++) {
-      let element = wordselems[i];
-      str += element.value ? String(element.value) + "\r\n" : "";
-      element.value = "";
-    }
+    $.each($(".newword"), (i, elem) => {
+      str += elem.value ? String(elem.value) + "\r\n" : "";
+      elem.value = "";
+    });
   }
   settings.data.message = str;
 }
@@ -142,7 +138,7 @@ function successGame(data, num) {
   if (stoptimer) {
     $("#next").hide();
     $("#play").show();
-    $("#timer").text("");//
+    $("#timer").text(""); //
     $("#menuopen").fadeIn(50);
     inGame = false;
   }
@@ -287,3 +283,21 @@ const play = {
     new Audio("./sounds/clock.mp3").play();
   },
 };
+
+function getLastAction(i, elem) {
+  $.ajax({
+    url: "./manager/manager.php",
+    type: "POST",
+    dataType: "html",
+    data: {
+      task: "getactions",
+      gamename: elem.value,
+    },
+  }).done((data) => {
+    $(`<br><span> ${data ? "изм. " + data : " "}</span>`).appendTo(elem);
+  });
+}
+
+function getActions() {
+  $.each($(".s_room"), getLastAction);
+}
