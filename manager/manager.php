@@ -3,10 +3,8 @@ $task = $_POST['task'];
 $msg = $_POST['message'];
 $filename1 = $_POST['gamename'] ? $_POST['gamename'] : "game";
 $filename2 = "$filename1" . "_playroom_active";
-$filename3 = "$filename1" . "_last_action";
 $filepath1 = file_path($filename1);
 $filepath2 = file_path($filename2);
-$filepath3 = file_path($filename3);
 
 switch ($task) {
     case "play": //
@@ -16,7 +14,6 @@ switch ($task) {
     case "next": //
         writeFileContent($filepath2, $msg);
         echo readFileContent($filepath2);
-        log_action();
         break;
 
     case "newgame": //
@@ -24,7 +21,6 @@ switch ($task) {
         echo $text
             ? (writeFileContent($filepath2, $text) ? 'Игра начата' : 'Ошибка при создании нового кона')
             : ('Ошибка, в игре нет слов');
-        log_action();
         break;
 
     case "clear": //
@@ -35,7 +31,6 @@ switch ($task) {
         echo ($msg)
             ? (addFileContent($filepath1, $msg) ? 'Данные в файл успешно занесены' : 'Ошибка при записи в файл')
             : ("Пустой набор слов");
-        log_action();
         break;
 
     case "info": //
@@ -43,7 +38,7 @@ switch ($task) {
         break;
 
     case "getactions": //
-        echo readFileContent($filepath3);
+        echo getLastAction();
         break;
 
     default:
@@ -75,13 +70,13 @@ function clearAllFiles()
     echo ($del > 0) ? "Набор слов успешно очищен" : "Данные уже очищены";
 }
 
+function getLastAction()
+{
+    global $filepath1, $filepath2;
+    if (file_exists($filepath1)) return date('j M H:i', max(filemtime($filepath1), filemtime($filepath2)));
+}
+
 function file_path($filename)
 {
     return "../content/" . "$filename" . ".txt";
-}
-
-function log_action()
-{
-    global $filepath3;
-    file_put_contents($filepath3, date('j M H:i'));
 }

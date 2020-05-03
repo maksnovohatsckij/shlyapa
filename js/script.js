@@ -294,7 +294,7 @@ function getLastAction(i, elem) {
       gamename: elem.value,
     },
   }).done((data) => {
-    $(`<br><span> ${data ? "изм. " + data : " "}</span>`).appendTo(elem);
+    $(`<span> ${data ? "изм. " + data : " "}</span>`).appendTo(elem);
   });
 }
 
