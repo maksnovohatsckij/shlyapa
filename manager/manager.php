@@ -2,7 +2,7 @@
 $task = $_POST['task'];
 $msg = $_POST['message'];
 $filename1 = $_POST['gameroom'] ? $_POST['gameroom'] : "default";
-$filename2 = "$filename1" . "_playroom_active";
+$filename2 = "$filename1" . "#playroom_active";
 $filepath1 = file_path($filename1);
 $filepath2 = file_path($filename2);
 
@@ -48,7 +48,7 @@ switch ($task) {
 
 function readFileContent($filepath)
 {
-    return file_get_contents($filepath);
+    if (file_exists($filepath)) return file_get_contents($filepath);
 }
 
 function addFileContent($filepath, $text)
@@ -65,9 +65,10 @@ function clearAllFiles()
 {
     global $filepath1, $filepath2;
     $del = 0;
-    if (unlink($filepath1)) $del++;
-    if (unlink($filepath2))  $del++;
+    if (file_exists($filepath1)) if (unlink($filepath1)) $del++;
+    if (file_exists($filepath2)) if (unlink($filepath2))  $del++;
     echo ($del > 0) ? "Набор слов успешно очищен" : "Данные уже очищены";
+    include "./scanner.php";
 }
 
 function getLastAction()
@@ -78,7 +79,5 @@ function getLastAction()
 
 function file_path($filename)
 {
-    return "../data/" . "$filename" . ".txt";
+    return "../data/" . "$filename";
 }
-//тут надо сделать лог каталогов и удаление старых файлов при вызове очистки
-//или возможность смотреть все файлы

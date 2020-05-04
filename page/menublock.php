@@ -1,7 +1,7 @@
 <div id="menu">
     <div id="menuclosecontainer" class="container">
         <div id="current_room"></div>
-        <button id="menuclose" class="btn btn-link">Назад</button>
+        <button id="menuclose" class="btn shadow-none">Назад</button>
     </div>
     <div class="container mb-2">
         <div>Добавить слова:</div>
