@@ -1,7 +1,7 @@
 <?php
 $task = $_POST['task'];
 $msg = $_POST['message'];
-$filename1 = $_POST['gamename'] ? $_POST['gamename'] : "game";
+$filename1 = $_POST['gameroom'] ? $_POST['gameroom'] : "default";
 $filename2 = "$filename1" . "_playroom_active";
 $filepath1 = file_path($filename1);
 $filepath2 = file_path($filename2);
@@ -78,5 +78,7 @@ function getLastAction()
 
 function file_path($filename)
 {
-    return "../content/" . "$filename" . ".txt";
+    return "../data/" . "$filename" . ".txt";
 }
+//тут надо сделать лог каталогов и удаление старых файлов при вызове очистки
+//или возможность смотреть все файлы

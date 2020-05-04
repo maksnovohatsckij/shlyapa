@@ -1,5 +1,6 @@
 <div id="menu">
     <div id="menuclosecontainer" class="container">
+        <div id="current_room"></div>
         <button id="menuclose" class="btn btn-link">Назад</button>
     </div>
     <div class="container mb-2">

@@ -7,7 +7,7 @@ let settings = {
   data: {
     message: "",
     task: "",
-    gamename: "",
+    gameroom: "",
   },
 };
 
@@ -19,13 +19,30 @@ let word = "";
 let lastChanse = false;
 
 $(document).ready(() => {
-  $("#menu").hide();
-  $("#next").hide();
-  $("#play").hide();
-  $("#menuopen").hide();
-  setGameName().then(preparePage, setGameName);
-  getActions();
+  $("#menu,#next,#play,#menuopen").hide();
+  registration(preparePage);
 });
+
+function registration(after) {
+  let res, rej;
+  let setRoom = () => {
+    new Promise((resolve, reject) => {
+      res = resolve;
+      rej = reject;
+    }).then(after, setRoom);
+    $("#setgamename").show(20);
+  };
+  $("#selectname").keyup((e) => {
+    e.target.value = filter_name(e.target.value);
+    getLastAction(e.target);
+  });
+  $("#selectnamebutton").click(() => {
+    let val = filter_name(document.getElementById("selectname").value);
+    settings.data.gameroom = val;
+    $("#setgamename").fadeOut(150, val ? res : rej);
+  });
+  setRoom();
+}
 
 function preparePage() {
   $("#play").fadeIn(30);
@@ -45,6 +62,7 @@ function preparePage() {
   $("#infobutton").click(() => request(5));
   $("#nullScores").click(resetScores);
   $("#randomiser").click(shuffle);
+  $("#current_room").html(`Комната: ${settings.data.gameroom}`);
 }
 
 function setScores(scores) {
@@ -225,23 +243,6 @@ function timeout(time, delay) {
   }
 }
 
-function setGameName() {
-  return new Promise((resolve, reject) => {
-    $("#setgamename").show();
-    $("#selectnamebutton").click(() => {
-      let val = document.getElementById("selectname").value;
-      $("#setgamename").fadeOut(150);
-      if (val) {
-        settings.data.gamename = val;
-        resolve();
-      } else {
-        console.log("errorGameName");
-        reject();
-      }
-    });
-  });
-}
-
 function shuffle() {
   let array = (prompt("Ведите имена участников через пробел") || "")
     .split(" ")
@@ -284,20 +285,23 @@ const play = {
   },
 };
 
-function getLastAction(i, elem) {
+function getLastAction(elem) {
   $.ajax({
     url: "./manager/manager.php",
     type: "POST",
     dataType: "html",
     data: {
       task: "getactions",
-      gamename: elem.value,
+      gameroom: elem.value,
     },
   }).done((data) => {
-    $(`<span> ${data ? "изм. " + data : " "}</span>`).appendTo(elem);
+    $(`#gameroom-info`).html(data ? "Посл. активность:" + data : "");
   });
 }
 
-function getActions() {
-  $.each($(".s_room"), getLastAction);
+function filter_name(str) {
+  return str.replace(
+    /@|;|:|\.|,|\/|\\|\||\$|\?|!|#|%|\*|\^|\+|=|\[|\]| |\ |«|<|>/gi,
+    ""
+  );
 }
