@@ -74,7 +74,7 @@ function clearAllFiles()
 function getLastAction()
 {
     global $filepath1, $filepath2;
-    if (file_exists($filepath1)) return date('j M H:i', max(filemtime($filepath1), filemtime($filepath2)));
+    if (file_exists($filepath1)) return date('j M H:i', max(filemtime($filepath1), file_exists($filepath2) ? filemtime($filepath2) : false));
 }
 
 function file_path($filename)

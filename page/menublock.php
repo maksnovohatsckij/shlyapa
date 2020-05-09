@@ -4,8 +4,8 @@
         <button id="menuclose" class="btn shadow-none">Назад</button>
     </div>
     <div class="container mb-2">
-        <div>Добавить слова:</div>
-        <input placeholder="слово 1" class="newword form-control mb-1 mt-1" type="text" />
+        <div class="mb-1">Добавить слова:</div>
+        <input placeholder="слово 1" class="newword form-control mb-1" type="text" />
         <input placeholder="слово 2" class="newword form-control mb-1" type="text" />
         <input placeholder="слово 3" class="newword form-control mb-1" type="text" />
         <input placeholder="слово 4" class="newword form-control mb-1" type="text" />

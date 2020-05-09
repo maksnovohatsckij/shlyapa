@@ -149,7 +149,6 @@ input {
   height: fit-content;
   transform: translate(-50%, -50%);
   z-index: +9;
-  display: none;
   padding: 10px;
 }
 #setgamename h5 {
@@ -165,6 +164,41 @@ input {
   height: 1em;
   line-height: 1em;
 }
+#gameroom-title {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  transform: translateY(150%);
+  opacity: 0;
+  transition: 0.15s;
+  transition-delay: 0.05s;
+}
+@media (min-width: 681px) {
+  #selectname:hover ~ #gameroom-title {
+    opacity: 1;
+  }
+}
+@media (max-width: 680px) and (min-height: 450px) {
+  @keyframes title {
+    from {
+      opacity: 0;
+    }
+    2% {
+      opacity: 1;
+    }
+    97% {
+      opacity: 1;
+    }
+    to {
+      opacity: 0;
+    }
+  }
+  #selectname:hover ~ #gameroom-title,
+  #selectname:focus ~ #gameroom-title {
+    animation: title 6s;
+  }
+}
+
 #feedback {
   position: absolute;
   top: 0;
@@ -174,7 +208,7 @@ input {
   opacity: 0.8;
   transition: 0.1s;
 }
-#feedback:hover{
+#feedback:hover {
   opacity: 0.83;
 }
 #feedback::before {

@@ -12,7 +12,7 @@ let settings = {
 };
 
 let scores = 0;
-let pushable = true;
+let next_pushable = true;
 let inGame = false;
 let dataArr = [];
 let word = "";
@@ -33,11 +33,11 @@ function registration(after) {
     $("#setgamename").show(20);
   };
   $("#selectname").keyup((e) => {
-    e.target.value = filter_name(e.target.value);
+    e.target.value = filterName(e.target.value);
     getLastAction(e.target);
   });
   $("#selectnamebutton").click(() => {
-    let val = filter_name(document.getElementById("selectname").value);
+    let val = filterName(document.getElementById("selectname").value);
     settings.data.gameroom = val;
     $("#setgamename").fadeOut(150, val ? res : rej);
   });
@@ -61,7 +61,7 @@ function preparePage() {
   $("#addwords").click(() => request(4));
   $("#infobutton").click(() => request(5));
   $("#nullScores").click(resetScores);
-  $("#randomiser").click(shuffle);
+  $("#randomiser").click(shufflePlayers);
   $("#current_room").html(`Комната: ${settings.data.gameroom}`);
 }
 
@@ -98,10 +98,11 @@ function resetScores() {
   play.coin();
   $("#information").text("Очки обнулены");
 }
+
 function pushNext() {
-  if (pushable) {
-    pushable = false;
-    return request(1);
+  if (next_pushable) {
+    next_pushable = false;
+    request(1);
   }
 }
 
@@ -136,9 +137,7 @@ function successMenu(data, num) {
   if (num == 5) {
     $("#information").html(
       data
-        ? "В игре всего " +
-            data.split("\r\n").filter((item) => (item ? true : false)).length +
-            " слов"
+        ? "В игре всего " + data.split("\r\n").filter(Boolean).length + " слов"
         : "В игре всего 0 слов. Добавьте слова, чтобы начать игру."
     );
     play.coin();
@@ -162,17 +161,17 @@ function successGame(data, num) {
   }
 
   if (num == 1) {
-    play.coin();
-    pushable = lastChanse ? false : true;
+    next_pushable = lastChanse ? false : true;
     scores++;
     $("header span").text("очки: " + scores);
-    if (!word) setTimeout(play.endgame, 600);
     setScores(scores);
+    play.coin();
+    if (!word) setTimeout(play.endgame, 600);
   } else if (num == 0 && word) {
-    play.upload();
     timer();
-    pushable = true;
+    next_pushable = true;
     $("header span").text("очки: " + scores);
+    play.upload();
   }
 
   if (!lastChanse) {
@@ -189,7 +188,7 @@ function successGame(data, num) {
 
 function getWord(data) {
   if (data) {
-    dataArr = data.split("\r\n").filter((item) => (item ? true : false));
+    dataArr = data.split("\r\n").filter(Boolean);
     if (dataArr) {
       let daNum = random(dataArr.length - 1);
       word = dataArr[daNum];
@@ -203,60 +202,53 @@ function getWord(data) {
 
 function timer() {
   let time = 30;
-  let delay = 6.6;
+  let delay = 7;
   $("#play").hide();
   $("#next").show();
   $("#menuopen").hide();
   $("#next").text("Следующее слово");
   lastChanse = false;
   inGame = true;
-  timeout(time, delay);
-}
-
-function timeout(time, delay) {
-  if (!stoptimer) {
-    if (time > 0) {
-      $("#timer").text(time);
-      time -= 1;
-      setTimeout(() => timeout(time, delay), 1000);
-    } else if (time == 0) {
-      play.warning();
-      $("#timer").text(time);
-      time -= 1;
-      $("#next").text("Последний шанс");
-      lastChanse = true;
-      setTimeout(() => timeout(time, delay), delay * 1000);
-      inGame = false;
-      play.clock();
-    } else if (lastChanse) {
-      $("#next").hide();
-      $("#play").show();
-      $("#msg").text("время вышло");
-      $("#timer").text("");
-      $("#menuopen").fadeIn(50);
-      lastChanse = false;
+  (function timeout(time) {
+    if (!stoptimer) {
+      if (time > 0) {
+        $("#timer").text(time);
+        setTimeout(() => timeout(time - 1), 1000);
+      } else if (time == 0) {
+        $("#timer").text(time);
+        $("#next").text("Последний шанс");
+        lastChanse = true;
+        inGame = false;
+        play.warning();
+        play.clock();
+        setTimeout(() => timeout(time - 1), delay * 1000);
+      } else if (lastChanse) {
+        $("#next").hide();
+        $("#play").show();
+        $("#msg").text("время вышло");
+        $("#timer").text("");
+        $("#menuopen").fadeIn(50);
+        lastChanse = false;
+        play.lose();
+      }
+    } else if (!inGame && word) {
       play.lose();
+      $("#msg").text("время вышло");
     }
-  } else if (!inGame && word) {
-    play.lose();
-    $("#msg").text("время вышло");
-  }
+  })(time);
 }
 
-function shuffle() {
-  let array = (prompt("Ведите имена участников через пробел") || "")
+function shufflePlayers() {
+  let arr = (prompt("Ведите имена участников через пробел") || "")
     .split(" ")
-    .filter((item) => (item ? true : false));
-  for (let i = array.length - 1; i > 0; i--) {
+    .filter(Boolean);
+  for (let i = arr.length - 1; i > 0; i--) {
     let j = random(i);
-    [array[i], array[j]] = [array[j], array[i]];
+    [arr[i], arr[j]] = [arr[j], arr[i]];
   }
   let str = "";
-  let pair = true;
-  array.forEach((item) => {
-    str += pair ? item : ` - ${item} <br>`;
-    pair = pair ? false : true;
-  });
+  let pair = false;
+  arr.forEach((item) => (str += (pair = !pair) ? item : ` - ${item} <br>`));
   $("#randomiser-res").html(str);
 }
 
@@ -299,7 +291,7 @@ function getLastAction(elem) {
   });
 }
 
-function filter_name(str) {
+function filterName(str) {
   return str.replace(
     /@|;|:|\.|,|\/|\\|\||\$|\?|!|#|%|\*|\^|\+|=|\[|\]| |\ |«|<|>/gi,
     ""
