@@ -14,7 +14,6 @@ let settings = {
 let scores = 0;
 let next_pushable = true;
 let inGame = false;
-let dataArr = [];
 let word = "";
 let lastChanse = false;
 
@@ -115,7 +114,7 @@ function request(num) {
 function putMsgVal(num) {
   let str = "";
   if (num == 1) {
-    str += dataArr.join("\r\n");
+    str += word;
   } else if (num == 4) {
     $.each($(".newword"), (i, elem) => {
       str += elem.value ? String(elem.value) + "\r\n" : "";
@@ -188,16 +187,9 @@ function successGame(data, num) {
 
 function getWord(data) {
   if (data) {
-    dataArr = data.split("\r\n").filter(Boolean);
-    if (dataArr) {
-      let daNum = random(dataArr.length - 1);
-      word = dataArr[daNum];
-      dataArr.splice(daNum, 1);
-    }
-  } else {
-    dataArr = [];
-    word = undefined;
-  }
+    let dataArr = data.split("\r\n").filter(Boolean);
+    word = dataArr ? dataArr[random(dataArr.length - 1)] : undefined;
+  } else word = undefined;
 }
 
 function timer() {

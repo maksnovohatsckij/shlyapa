@@ -1,16 +1,19 @@
 <?php
 $del_2 = 0;
-$format = 'Y-m-d H:i:s';
-$now = (new DateTime())->format($format);
-$threedayas = mktime(0, 0, 3, 3, 1, 1970);
+$three_days_ago = strtotime("-3 days");
 $directory = '../data/';
+$logfile = "$directory" . "log_deleted_files.txt";
 $scanned_directory = array_diff(scandir($directory), array('..', '.', ".gitkeep", "log_deleted_files.txt"));
 foreach ($scanned_directory as $value) {
-    $file_time = date($format, filemtime("$directory" . "$value"));
-    $difference = strtotime($now) - strtotime($file_time);
-    if ($difference > $threedayas) addFileContent("$directory" . "log_deleted_files.txt", (($del_2++ + 1) . ". " . "$value" . " - deleted, " . (unlink("$directory" . "$value") ? "success" : "fail") . "\r\n"));
+    $filetime = filemtime("$directory" . "$value");
+    if ($filetime < $three_days_ago) addFileContent($logfile, (($del_2++ + 1) . ". $value - " . (unlink("$directory" . "$value") ? "del" : "fail") . "\r\n"));
+}
+if ($del > 0) {
+    addFileContent($logfile, ($del > 1 ? "$filename1, $filename2" : "$filename1") . " - del\r\n");
+    if (file_exists($logfile)) if (filesize($logfile) > 1024 * 20) unlink($logfile);
 }
 if ($del_2 > 0) {
     echo ', так же удалены устаревшие файлы';
-    addFileContent("$directory" . "log_deleted_files.txt", "$now" . "\r\n\n");
+    addFileContent($logfile, date('Y-m-d H:i:s') . "\r\n\n");
+    if (file_exists($logfile)) if (filesize($logfile) > 1024 * 20) unlink($logfile);
 }

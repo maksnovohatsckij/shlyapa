@@ -12,7 +12,8 @@ switch ($task) {
         break;
 
     case "next": //
-        writeFileContent($filepath2, $msg);
+        $text = str_replace_once($msg, "", readFileContent($filepath2));
+        writeFileContent($filepath2, $text);
         echo readFileContent($filepath2);
         break;
 
@@ -81,3 +82,9 @@ function file_path($filename)
 {
     return "../data/" . "$filename";
 }
+
+function str_replace_once($search, $replace, $text) 
+{ 
+   $pos = strpos($text, $search); 
+   return $pos!==false ? substr_replace($text, $replace, $pos, strlen($search)) : $text; 
+} 
