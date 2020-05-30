@@ -1,16 +1,4 @@
-const task = ["play", "next", "newgame", "clear", "addwords", "info"];
-
-let settings = {
-  url: "./manager/manager.php",
-  type: "POST",
-  dataType: "html",
-  data: {
-    message: "",
-    task: "",
-    gameroom: "",
-  },
-};
-
+let gameroom = "";
 let scores = 0;
 let next_pushable = true;
 let inGame = false;
@@ -24,44 +12,48 @@ $(document).ready(() => {
 
 function registration(after) {
   let res, rej;
-  let setRoom = () => {
+  $("#selectname").keyup((e) => {
+    e.target.value = filterName(e.target.value);
+    getLastAction(e.target);
+    if (e.keyCode == 13) $("#selectnamebutton").click();
+  });
+  $("#selectnamebutton").click(() => {
+    gameroom = filterName(document.getElementById("selectname").value);
+    $("#setgamename").fadeOut(150, gameroom ? res : rej);
+  });
+  (function setRoom() {
     new Promise((resolve, reject) => {
       res = resolve;
       rej = reject;
     }).then(after, setRoom);
     $("#setgamename").show(20);
-  };
-  $("#selectname").keyup((e) => {
-    e.target.value = filterName(e.target.value);
-    getLastAction(e.target);
-  });
-  $("#selectnamebutton").click(() => {
-    let val = filterName(document.getElementById("selectname").value);
-    settings.data.gameroom = val;
-    $("#setgamename").fadeOut(150, val ? res : rej);
-  });
-  setRoom();
+  })();
 }
 
 function preparePage() {
-  $("#play").fadeIn(30);
-  $("#menuopen").fadeIn(100);
-  getScores();
+  $("#current_room").html(`Комната: ${gameroom}`);
   $("#msg").html(
     `<small><small>Откройте меню, чтобы положить слова в шляпу и затем запустить кон. Нажмите "ход", чтобы взять слова из шляпы.</small></small>`
   );
   $("#msg small").fadeIn(20);
+  $("#play").fadeIn(30);
+  $("#menuopen").fadeIn(100);
+  getScores();
   $("#menuopen").click(() => $("#menu").fadeIn(100));
   $("#menuclose").click(() => $("#menu").fadeOut(150));
-  $("#play").click(() => request(0));
-  $("#next").click(pushNext);
-  $("#newgame").click(() => request(2));
-  $("#clear").click(() => request(3));
-  $("#addwords").click(() => request(4));
-  $("#infobutton").click(() => request(5));
+  $("#play").click(() => request("play"));
+  $("#next").click(() => {
+    if (next_pushable) {
+      next_pushable = false;
+      request("next");
+    }
+  });
+  $("#newgame").click(() => request("newgame"));
+  $("#clear").click(() => request("clear"));
+  $("#addwords").click(() => request("addwords"));
+  $("#infobutton").click(() => request("info"));
   $("#nullScores").click(resetScores);
   $("#randomiser").click(shufflePlayers);
-  $("#current_room").html(`Комната: ${settings.data.gameroom}`);
 }
 
 function setScores(scores) {
@@ -98,42 +90,42 @@ function resetScores() {
   $("#information").text("Очки обнулены");
 }
 
-function pushNext() {
-  if (next_pushable) {
-    next_pushable = false;
-    request(1);
-  }
+function request(task) {
+  $.ajax({
+    url: "./manager/manager.php",
+    type: "POST",
+    dataType: "html",
+    data: {
+      message: createMessage(task),
+      task: task,
+      gameroom: gameroom,
+    },
+  }).done((data) => fSucces(data, task));
 }
 
-function request(num) {
-  settings.data.task = task[num];
-  putMsgVal(num);
-  $.ajax(settings).done((data) => fSucces(data, num));
-}
-
-function putMsgVal(num) {
+function createMessage(task) {
   let str = "";
-  if (num == 1) {
-    str += word;
-  } else if (num == 4) {
+  if (task == "next") {
+    str = word;
+  } else if (task == "addwords") {
     $.each($(".newword"), (i, elem) => {
       str += elem.value ? String(elem.value) + "\r\n" : "";
       elem.value = "";
     });
   }
-  settings.data.message = str;
+  return str;
 }
 
-function fSucces(data, num) {
-  if (num > 1) {
-    successMenu(data, num);
+function fSucces(data, task) {
+  if (task == "play" || task == "next") {
+    successGame(data, task);
   } else {
-    successGame(data, num);
+    successMenu(data, task);
   }
 }
 
-function successMenu(data, num) {
-  if (num == 5) {
+function successMenu(data, task) {
+  if (task == "info") {
     $("#information").html(
       data
         ? "В игре всего " + data.split("\r\n").filter(Boolean).length + " слов"
@@ -146,7 +138,7 @@ function successMenu(data, num) {
   }
 }
 
-function successGame(data, num) {
+function successGame(data, task) {
   getWord(data);
 
   stoptimer = lastChanse ? true : word ? false : true;
@@ -159,14 +151,14 @@ function successGame(data, num) {
     inGame = false;
   }
 
-  if (num == 1) {
+  if (task == "next") {
     next_pushable = lastChanse ? false : true;
     scores++;
     $("header span").text("очки: " + scores);
     setScores(scores);
     play.coin();
     if (!word) setTimeout(play.endgame, 600);
-  } else if (num == 0 && word) {
+  } else if (task == "play" && word) {
     timer();
     next_pushable = true;
     $("header span").text("очки: " + scores);
