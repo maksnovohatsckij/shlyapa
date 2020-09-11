@@ -4,6 +4,7 @@ let next_pushable = true;
 let inGame = false;
 let word = "";
 let lastChanse = false;
+let players = "";
 
 $(document).ready(() => {
   $("#menu,#next,#play,#menuopen").hide();
@@ -39,7 +40,7 @@ function preparePage() {
   $("#play").fadeIn(30);
   $("#menuopen").fadeIn(100);
   getScores();
-  $("#menuopen").click(() => $("#menu").fadeIn(100));
+  $("#menuopen").click(() => $("#menu").fadeIn(100, getPlayers));
   $("#menuclose").click(() => $("#menu").fadeOut(150));
   $("#play").click(() => request("play"));
   $("#next").click(() => {
@@ -112,6 +113,8 @@ function createMessage(task) {
       str += elem.value ? String(elem.value) + "\r\n" : "";
       elem.value = "";
     });
+  } else if (task == "setPlayers") {
+    str = players;
   }
   return str;
 }
@@ -132,6 +135,11 @@ function successMenu(data, task) {
         : "В игре всего 0 слов. Добавьте слова, чтобы начать игру."
     );
     play.coin();
+  } else if (task == "getPlayers") {
+    players = data || "";
+    $("#randomiser-res").html(players);
+  } else if (task == "setPlayers") {
+    request("getPlayers");
   } else {
     $("#information").html(data ? data : "Пустой ответ сервера");
     play.upload();
@@ -233,7 +241,16 @@ function shufflePlayers() {
   let str = "";
   let pair = false;
   arr.forEach((item) => (str += (pair = !pair) ? item : ` - ${item} <br>`));
-  $("#randomiser-res").html(str);
+  setPlayers(str);
+}
+
+function setPlayers(str) {
+  players = str;
+  request("setPlayers");
+}
+
+function getPlayers() {
+  request("getPlayers");
 }
 
 function random(max) {

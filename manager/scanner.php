@@ -9,7 +9,8 @@ foreach ($scanned_directory as $value) {
     if ($filetime < $three_days_ago) addFileContent($logfile, (($del_2++ + 1) . ". $value - " . (unlink("$directory" . "$value") ? "del" : "fail") . "\r\n"));
 }
 if ($del > 0) {
-    addFileContent($logfile, ($del > 1 ? "$filename1, $filename2" : "$filename1") . " - del\r\n");
+    global $filename1, $filename2, $filename3;
+    addFileContent($logfile, ($del > 1 ? ($del > 2 ? "$filename1, $filename2, $filename3" : "$filename1, $filename2") : "$filename1") . " - del\r\n");
     if (file_exists($logfile)) if (filesize($logfile) > 1024 * 20) unlink($logfile);
 }
 if ($del_2 > 0) {
