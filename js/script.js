@@ -39,6 +39,7 @@ function preparePage() {
   $("#msg small").fadeIn(20);
   $("#play").fadeIn(30);
   $("#menuopen").fadeIn(100);
+  $(".guestmessage").fadeOut(20);
   getScores();
   $("#menuopen").click(() => $("#menu").fadeIn(100, getPlayers));
   $("#menuclose").click(() => $("#menu").fadeOut(150));

@@ -141,6 +141,7 @@ input {
 
 #setgamename {
   background-color: rgb(166, 190, 216);
+  border-radius: 0.5em;
   box-shadow: 0 0 1em rgb(173, 185, 185);
   position: fixed;
   top: 50vh;
@@ -195,7 +196,7 @@ input {
   }
   #selectname:hover ~ #gameroom-title,
   #selectname:focus ~ #gameroom-title {
-    animation: title 6s;
+    animation: title 12s;
   }
 }
 
@@ -215,6 +216,16 @@ input {
   content: "💬";
 }
 
+.guestmessage{
+  position: absolute;
+  top: -3em;
+  left: 0;
+  transform: translateY(-120%);
+  width: 100%;
+  transition: 0.1s;
+  border-radius: 0.5em;
+}
+
 #menuopen {
   position: fixed;
   top: 4.7em;
@@ -228,6 +239,13 @@ input {
 @media (max-width: 308px) {
   #menuopen {
     top: 7.8em;
+  }
+  .guestmessage{
+    display: none;
+  }
+
+  #setgamename {
+    border-radius: 0;
   }
 }
 #menuopen,
