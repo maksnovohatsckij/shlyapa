@@ -11,7 +11,7 @@
     <meta content='yes' name='apple-mobile-web-app-capable' />
     <meta name="keywords" content="шляпа, игра шляпа, Приложение для игры в шляпу, shlyapa, shlyapa-online, онлайн шляпа, shlyapa-online-app" />
     <meta name="description" content="Веб-приложение для игры в шляпу" />
-    <meta property="og:image" content="https://repository-images.githubusercontent.com/260586896/2b857080-8c27-11ea-947f-f783d94c89aa">
+    <meta property="og:image" content="https://repository-images.githubusercontent.com/260586896/99c33300-d22d-11eb-8f38-302e5870c5d7">
     <meta property="og:title" content="Шляпа">
     <meta property="og:description" content="Веб-приложение для игры в шляпу">
     <meta property="og:locale" content="ru_RU">
